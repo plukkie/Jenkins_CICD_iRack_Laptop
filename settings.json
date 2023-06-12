@@ -120,7 +120,7 @@
 		"dyn_http_contnameX"   : ""
 	},
 	"externals" : {
-		"ansible_playbook_repo" : { "url" : "https://github.com/plukkie/Ansible_SONiC_EVPN_Fabric_Laptop.git", "inventoryfile" : "hosts" }
+		"ansible_playbook_repo" : { "url" : "https://github.com/plukkie/Ansible_iRack_Laptop.git", "inventoryfile" : "hosts" }
 
 	}
 }
