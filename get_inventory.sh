@@ -20,18 +20,19 @@ filtered_lldp_filesuffix='.lldp_neighbors'
 ztp_suffix=".ztp.finished"
 # END CONSTANTS
 
-for pid in $(pidof -x $scriptname); do
-    if [ $pid != $$ ]; then
-        echo "[$(date)] : $scriptname : Process is already running with PID $pid"
-        exit 1
-    fi
-done
+#for pid in $(pidof -x $scriptname); do
+#    if [ $pid != $$ ]; then
+#        echo "[$(date)] : $scriptname : Process is already running with PID $pid"
+#        exit 1
+#    fi
+#done
 
 # get list of files from http ztp server
 iplist=`curl -s $prot$ztphost$ztp_finishedpath | grep -o 'href=.*ztp'| sed "s/.ztp.*//" | sed s/.*=\"//`
 
-for ip in "${iplist[@]}"
+for ip in $iplist
 do
+  echo $ip
   if [ ! -z "$ip" ] && [ $ip != '*' ]
     then
        # construct authentication credentials json
