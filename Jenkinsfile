@@ -27,7 +27,7 @@ pipeline {
 			sleep( time: 3 )
       		}
 	}*/
-	stage('Stage: Provision iRack GNS3 .....') {
+	stage('Stage: Provision iRack GNS3') {
 		
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py creategns3project devstage | grep "proceed"', returnStdout: true).trim()}"
@@ -57,7 +57,7 @@ pipeline {
       		}
 	}
 
-    	stage('Stage: iRack Zero Touch Deployment....') {
+    	stage('Stage: iRack SONiC Zero Touch Deployment') {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py startgns3 devstage ${noztpcheck} | grep "proceed"', returnStdout: true).trim()}"
@@ -81,8 +81,15 @@ pipeline {
 			}
       		}
 	}
+	  
+	stage('Stage: Discover LLDP neighbors') {
+		steps {
+        	   sh 'bash ./get_inventory.sh'
+        	}
+		  
+	}
 
-	stage("Stage: Configure iRack Day1....") {
+	stage("Stage: Configure iRack Day1") {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage configure | grep "proceed"', returnStdout: true).trim()}"
