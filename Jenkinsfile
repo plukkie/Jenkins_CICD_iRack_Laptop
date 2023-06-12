@@ -57,7 +57,7 @@ pipeline {
       		}
 	}
 
-    	stage('Stage: iRack Zero Touch Deployment') {
+    	stage('Stage: iRack SONiC Zero Touch Deployment') {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py startgns3 devstage ${noztpcheck} | grep "proceed"', returnStdout: true).trim()}"
