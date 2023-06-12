@@ -8,6 +8,7 @@
 
 # BEGIN CONSTANTS
 ztphost='10.10.10.201'
+tftphost='10.10.10.201'
 prot='http://'
 sonicprot='https://'
 ztp_finishedpath='/tftpboot/ztp_finished/'
@@ -61,7 +62,17 @@ do
 	   echo $json|jq > $ip
 
 	   # Create filtered LLDP neighbors file
-	   jq -r '."openconfig-lldp:lldp".interfaces.interface|.[] | select(.neighbors.neighbor != null)|.neighbors.neighbor[]|[ .id, .state ]' $ip > $ip$filtered_lldp_filesuffix
+	   lldp_neighbors=$ip$filtered_lldp_filesuffix
+	   jq -r '."openconfig-lldp:lldp".interfaces.interface|.[] | select(.neighbors.neighbor != null)|.neighbors.neighbor[]|[ .id, .state ]' $ip > $lldp_neighbors
+
+	   #upload to tftp host
+	   #if curl -k --interface eth0 -T ${LOCALCONFIGFILE} tftp://${TFTPSERVER}${UPLOADPATH}${SAVEDCONFIGFILE}
+	   if curl -k -T $lldp_neighbors tftp://$tftphost$inventorypath$lldp_neighbors
+              then
+                echo "Succesfull upload"
+              else
+                echo "Error uploading file"
+           fi
 
          else # API access to device failed
            echo -e "\nCan not get API access to $ip\n"
