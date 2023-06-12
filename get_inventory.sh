@@ -70,7 +70,7 @@ do
 	   #upload to tftp host
 	   #if curl -k --interface eth0 -T ${LOCALCONFIGFILE} tftp://${TFTPSERVER}${UPLOADPATH}${SAVEDCONFIGFILE}
 	   httpcont=`jq .ztp.dyn_http_contname $settings`
-	   if [ $httpcont != "" ]; tftphost=$httpcont
+	   if [ $httpcont != "" ]; tftphost=$httpcont; fi
 
 	   if curl -k -T $lldp_neighbors tftp://$tftphost$inventorypath$lldp_neighbors
               then
