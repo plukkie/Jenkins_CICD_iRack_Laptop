@@ -7,6 +7,7 @@
 #######################################
 
 # BEGIN CONSTANTS
+settings='settimgs.json'
 ztphost='10.10.10.201'
 tftphost='10.10.10.201'
 prot='http://'
@@ -68,6 +69,9 @@ do
 
 	   #upload to tftp host
 	   #if curl -k --interface eth0 -T ${LOCALCONFIGFILE} tftp://${TFTPSERVER}${UPLOADPATH}${SAVEDCONFIGFILE}
+	   httpcont=`jq .ztp.dyn_http_contname $settings`
+	   if [ $httpcont != "" ]; tftphost=$httpcont
+
 	   if curl -k -T $lldp_neighbors tftp://$tftphost$inventorypath$lldp_neighbors
               then
                 echo "Succesfull upload"
