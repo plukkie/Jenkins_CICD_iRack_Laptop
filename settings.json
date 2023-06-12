@@ -52,7 +52,7 @@
 			"templates" : {
 				"leaf"	: { 
 					"name"  : "Enterprise SONiC 4.0.3", 
-					"count" : 4,
+					"count" : 2,
 					"pos"   : { "x" : -50, "y" : 42 },
 					"mac" 	: { "base" : "cc:bb:aa:", "start" : 11 },
 					"vlti"	: { "count" : 2, "1st_adapter_number" : 3, "adapterstep" : 4,"port" : 0, "portstep" : 0 },
@@ -80,7 +80,7 @@
 				},
 				"spine" : {
 					"name"  : "Enterprise SONiC 4.0.3",
-					"count" : 2,
+					"count" : 1,
 					"pos"   : { "x" : 100, "y" : -200 },
 					"mac" 	: { "base" : "cc:bb:aa:", "start" : 21 },
 					"vlti"	: { "count" : 0, "1st_adapter_number" : 8, "adapterstep" : 1,"port" : 0, "portstep" : 0 },
