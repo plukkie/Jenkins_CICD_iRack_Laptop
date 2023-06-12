@@ -4,7 +4,7 @@ pipeline {
   
   stages {
 	  
-	stage('Build') {
+	stage('Build code') {
 		steps {
 			sh 'pip install -r pyrequirements.txt'
 			sh 'python3 -m py_compile startcicd.py'
@@ -27,7 +27,7 @@ pipeline {
 			sleep( time: 3 )
       		}
 	}*/
-	stage('Stage Dev: Provision GNS3 Dev network.....') {
+	stage('Stage: Provision iRack GNS3 .....') {
 		
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py creategns3project devstage | grep "proceed"', returnStdout: true).trim()}"
@@ -38,7 +38,7 @@ pipeline {
 				println "Feedback from python script: ${env.LS}"
 				if (env.LS == 'proceed = True') {
 					env.noztpcheck = ''
-					echo 'Dev Network provisioning finished. Proceed to Stage Dev: Start Dev network.'
+					echo 'iRack provisioning finished. Proceed to Stage: ZTP.'
 					echo 'This can take ~15 minutes if ZTP staging is involved.....'
                                         sleep( time: 2 )
                                 }
@@ -57,7 +57,7 @@ pipeline {
       		}
 	}
 
-    	stage('Stage Dev: Start GNS3 ZTP staging.....') {
+    	stage('Stage: iRack Zero Touch Deployment....') {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py startgns3 devstage ${noztpcheck} | grep "proceed"', returnStdout: true).trim()}"
@@ -69,7 +69,7 @@ pipeline {
 				//echo "${noztpcheck}"
 				println "Feedback from python script: ${env.LS}"
 				if (env.LS == 'proceed = True') {
-					echo 'Dev network succesfully started. Proceed to Stage Dev: Configure Dev network.'
+					echo 'iRack Provisioned. Proceed to Stage: Ansible Configure iRack.'
 					echo 'This can take ~15 minutes.....'
                                         sleep( time: 10 )
                                 }
@@ -82,7 +82,7 @@ pipeline {
       		}
 	}
 
-	stage("Stage Dev: Configure GNS3 Dev network....") {
+	stage("Stage: Configure iRack Day1....") {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage configure | grep "proceed"', returnStdout: true).trim()}"
@@ -95,8 +95,8 @@ pipeline {
 				//echo "${env.LS}"
 				if (env.LS == 'proceed = True') { //100% oke
 					sleep( time: 10 )
-					echo 'Succesfull Job completion.'
-            				echo 'Proceed to Stage Dev fase Validate operational status.'
+					echo 'Succesfull day1 Job completion.'
+            				echo 'Proceed to Stage: Validate operational status.'
 					echo 'This can take some minutes...'
 				}
 				if (env.LS.indexOf('relaunch') != -1) { //a relaunch was proposed, there were failures
@@ -126,7 +126,7 @@ pipeline {
 		}
         }
 	  
-	stage("Stage Dev: GNS3 Run Closed loop Validation tests") {
+	stage("Stage: Run Closed loop Validation tests") {
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage test | grep "proceed"', returnStdout: true).trim()}"
     		}
@@ -137,7 +137,7 @@ pipeline {
 				echo 'Closed loop Validation succesfully finished.'
 				//echo "${env.LS}"
 				if (env.LS == 'proceed = True') {
-					echo 'All validation tests succesful.'
+					echo 'All day1 validation tests succesfull.'
 					sleep( time: 2 )
 					//This step is to spare on resources in the Compute platform (Dev & Prod run together gives problems) 
 					//echo 'Will decommision Dev network to spare GNS3 resources...'
