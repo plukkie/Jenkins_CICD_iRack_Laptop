@@ -43,7 +43,7 @@
 		"starttimeout"  : 1900,
 		"boottimer"	: 180,
 		"newprojectdevjson": {
-				    "name" : "SONiC_Dev_Fabric",
+				    "name" : "iRack_ZTP",
 				    "auto_open" : true,
 				    "auto_close": false
 				  },
