@@ -7,7 +7,7 @@
 #######################################
 
 # BEGIN CONSTANTS
-settings='settimgs.json'
+settings='settings.json'
 ztphost='10.10.10.201'
 tftphost='10.10.10.201'
 prot='http://'
