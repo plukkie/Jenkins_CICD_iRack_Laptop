@@ -7,14 +7,17 @@
 #######################################
 
 # BEGIN CONSTANTS
+ztphost='10.10.10.201'
+prot='http://'
+sonicprot='https://'
+ztp_finishedpath='/tftpboot/ztp_finished/'
 username='admin'
 password='YourPaSsWoRd'
 inventorypath=/tftpboot/ifabric_inventory/
 scriptname="get_inventory.sh"
 filtered_lldp_filesuffix='.lldp_neighbors'
+ztp_suffix=".ztp.finished"
 # END CONSTANTS
-
-cd $inventorypath
 
 for pid in $(pidof -x $scriptname); do
     if [ $pid != $$ ]; then
@@ -23,14 +26,17 @@ for pid in $(pidof -x $scriptname); do
     fi
 done
 
-for file in *
+# get list of files from http ztp server
+iplist=`curl -s $prot$ztphost$ztp_finishedpath | grep -o 'href=.*ztp'| sed "s/.ztp.*//" | sed s/.*=\"//`
+
+for ip in "${iplist[@]}"
 do
-  if [ ! -z "$file" ] && [ $file != '*' ]
+  if [ ! -z "$ip" ] && [ $ip != '*' ]
     then
        # construct authentication credentials json
        json="{ \"username\" : \"$username\", \"password\" : \"$password\" }"
        # Authenticate to SONiC and receive JWT token
-       resp=`curl -s -k -X POST https://$file/authenticate -d "$json"`
+       resp=`curl -s -k -X POST $sonicprot$ip/authenticate -d "$json"`
        # Substract access_token key value
        token=`echo $resp |jq -r '.access_token'`
 
@@ -40,25 +46,25 @@ do
            authstring="Authorization: Bearer $token" # Construct json string for token auth
            
            # Receive system metadata
-	   resp=`curl -s -k -X GET https://$file/restconf/data/sonic-device-metadata:sonic-device-metadata -H \"accept: application/yang-data+json\" -H "$authstring"|jq|sed '$ s/}$/,/'`
+	   resp=`curl -s -k -X GET $sonicprot$ip/restconf/data/sonic-device-metadata:sonic-device-metadata -H \"accept: application/yang-data+json\" -H "$authstring"|jq|sed '$ s/}$/,/'`
 	   json=$resp
 
 	   # Receive interfaces
-           resp=`curl -s -k -X GET https://$file/restconf/data/openconfig-interfaces:interfaces -H \"accept: application/yang-data+json\" -H "$authstring"|jq|sed 's/^{//'|sed '$ s/}$/,/'`
+           resp=`curl -s -k -X GET $sonicprot$ip/restconf/data/openconfig-interfaces:interfaces -H \"accept: application/yang-data+json\" -H "$authstring"|jq|sed 's/^{//'|sed '$ s/}$/,/'`
 	   json=$json$resp
 
 	   # Receive LLDP neighbor data
-           resp=`curl -s -k -X GET https://$file/restconf/data/openconfig-lldp:lldp -H \"accept: application/yang-data+json\" -H "$authstring"|jq|sed 's/^{//'`
+           resp=`curl -s -k -X GET $sonicprot$ip/restconf/data/openconfig-lldp:lldp -H \"accept: application/yang-data+json\" -H "$authstring"|jq|sed 's/^{//'`
 	   json=$json$resp
 
 	   # Add all data in JSON nice organized to file
-	   echo $json|jq > $file
+	   echo $json|jq > $ip
 
 	   # Create filtered LLDP neighbors file
-	   jq -r '."openconfig-lldp:lldp".interfaces.interface|.[] | select(.neighbors.neighbor != null)|.neighbors.neighbor[]|[ .id, .state ]' $file > $file$filtered_lldp_filesuffix
+	   jq -r '."openconfig-lldp:lldp".interfaces.interface|.[] | select(.neighbors.neighbor != null)|.neighbors.neighbor[]|[ .id, .state ]' $ip > $ip$filtered_lldp_filesuffix
 
          else # API access to device failed
-           echo -e "\nCan not get API access to $file\n"
+           echo -e "\nCan not get API access to $ip\n"
        fi
   fi
 done
