@@ -84,7 +84,7 @@ pipeline {
 	  
 	stage('Stage: Discover LLDP neighbors') {
 		steps {
-        	   sh 'get_inventory.sh'
+        	   sh 'bash ./get_inventory.sh'
         	}
 		  
 	}
