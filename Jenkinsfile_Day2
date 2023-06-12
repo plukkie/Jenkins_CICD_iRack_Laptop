@@ -1,0 +1,98 @@
+pipeline {
+  agent any
+  
+  stages {
+	  
+	stage('Build') {
+		steps {
+			sh 'pip install -r pyrequirements.txt'
+			sh 'python3 -m py_compile startcicd.py'
+			stash(name: 'compiled-results', includes: '*.py*')
+		}
+	}
+
+    	stage('Show host versions') {
+      		steps {
+			echo 'Show python3 versions:'
+        		sh 'python3 --version'
+			sh 'pip3 list'
+      		}
+    	}
+
+	stage("Stage Dev: Configure Day2 changes on GNS3 Dev network....") {
+
+		environment {
+			LS = "${sh(script:'python3 -u startcicd.py launchawx template "Template SONiC DEV Fabric Day2 CONFIG" | grep "proceed"', returnStdout: true).trim()}"
+    		}
+                            
+		steps {			
+			script {
+				println "Feedback from python script: ${env.LS}"
+				echo 'Configuration Job finished.'
+				//echo "${env.LS}"
+				if (env.LS == 'proceed = True') { //100% oke
+					sleep( time: 10 )
+					echo 'Succesfull Job completion.'
+            				echo 'Proceed to Stage Dev fase Validate operational status of Day2 changes.'
+					echo 'This can take some minutes...'
+				}
+				if (env.LS.indexOf('relaunch') != -1) { //a relaunch was proposed, there were failures
+					relaunchuri = env.LS.substring(env.LS.lastIndexOf('=') + 1, env.LS.length())
+					//println "${relaunchuri}"
+					echo 'There are failures in Ansible playbook run. Retrying once on failed hosts...'
+					sleep( time: 2 )
+					env.RL = "${sh(script:"""python3 -u startcicd.py launchawx relaunch $relaunchuri | grep 'proceed'""", returnStdout: true).trim()}"
+					//echo "${env.RL}" //Show for logging, clearity
+					println "Feedback from python script: ${RL}"
+					
+					if (env.RL == 'proceed = True') { //100% oke
+						echo 'Succesfull Job completion.'
+            					echo 'Proceed to Stage Dev fase Validate operational status of Day2 changes.'
+						echo 'This can take some minutes...'
+						sleep( time: 5 )
+					} else {
+						println "Concurrent failures in Configuration Job. ${env.RL}, EXIT with error from else statement."
+						error ("There are concurrent failures in the job template execution. Pipeline stops here.")
+					}
+        			}
+				if (env.LS == 'proceed = False') {
+					echo 'Job execution failed.'
+					println "${env.LS}, EXIT with error from last if (env.LS) statement."
+            				error ("There were failures in the job template execution. Pipeline stops here.")
+        			}
+			}
+		}
+        }
+	
+	stage("Stage Dev: GNS3 Day2 Run Closed loop Validation tests") {
+		environment {
+			LS = "${sh(script:'python3 -u startcicd.py launchawx template "Template SONiC DEV Fabric Day2 VALIDATION" | grep "proceed"', returnStdout: true).trim()}"
+    		}
+            
+		steps {
+			script {
+				println "Feedback from python script: ${env.LS}"
+				echo 'Closed loop Validation succesfully finished.'
+				//echo "${env.LS}"
+				if (env.LS == 'proceed = True') {
+					echo 'All validation tests succesful.'
+					sleep( time: 2 )
+					//This step is to spare on resources in the Compute platform (Dev & Prod run together gives problems) 
+					//echo 'Will decommision Dev network to spare GNS3 resources...'
+					//sleep( time: 2 )
+					//sh 'python3 -u startcicd.py stopgns3 devstage' //Stop GNS3 project
+            				//echo 'Proceed to Stage Prod fase Provisioning.'
+					sleep( time: 3 )
+        			} else {
+					echo 'Closed loop Validation tests failed! Feedback from script:'
+					echo "${env.LS}"
+					echo "Job in AWX tower can be relaunched again or just run this Jenkins Day2 Job again."
+            				error ("There were failures in the job template execution. Pipeline stops here.")
+        			}
+			}
+		}
+        } 
+	
+  }
+}
+
