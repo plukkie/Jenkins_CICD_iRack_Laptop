@@ -70,7 +70,6 @@ pipeline {
 				println "Feedback from python script: ${env.LS}"
 				if (env.LS == 'proceed = True') {
 					echo 'iRack Provisioned. Proceed to Stage: discover LLDP neighbors.'
-					echo 'This can take ~15 minutes.....'
                                         //sleep( time: 10 )
                                 }
 				else {
@@ -84,8 +83,9 @@ pipeline {
 	  
 	stage('Stage: Discover LLDP neighbors') {
 		steps {
-		   sleep( time: 60 )
+		   sleep( time: 30 )
         	   sh './get_inventory.sh'
+		   echo 'Proceed to stage: Configure iRack. This can take ~15 minutes....'
         	}
 		  
 	}
