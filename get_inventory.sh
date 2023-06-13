@@ -30,6 +30,7 @@ ztp_suffix=".ztp.finished"
 
 # get list of files from http ztp server
 iplist=`curl -s $prot$ztphost$ztp_finishedpath | grep -o 'href=.*ztp'| sed "s/.ztp.*//" | sed s/.*=\"//`
+echo $iplist
 
 for ip in $iplist
 do
@@ -42,6 +43,7 @@ do
        resp=`curl -s -k -X POST $sonicprot$ip/authenticate -d "$json"`
        # Substract access_token key value
        token=`echo $resp |jq -r '.access_token'`
+       echo $token
 
        if [ ! -z "$token" ] #If there is a token received and thus not zero
          then
