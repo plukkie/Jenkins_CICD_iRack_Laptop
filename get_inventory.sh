@@ -84,7 +84,7 @@ do
 	   #upload to tftp host
 	   #if curl -k --interface eth0 -T ${LOCALCONFIGFILE} tftp://${TFTPSERVER}${UPLOADPATH}${SAVEDCONFIGFILE}
 
-	   tftpupload='tftp://$tftphost$inventorypath$lldp_neighbors'
+	   tftpupload='tftp://'$tftphost$inventorypath$lldp_neighbors
 	   echo $tftpupload
 
 	   if curl -k -T $lldp_neighbors $tftpupload
