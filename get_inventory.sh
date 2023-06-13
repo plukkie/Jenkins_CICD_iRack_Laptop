@@ -15,7 +15,7 @@ sonicprot='https://'
 ztp_finishedpath='/tftpboot/ztp_finished/'
 username='admin'
 password='YourPaSsWoRd'
-inventorypath=/tftpboot/ifabric_inventory/
+inventorypath=/ifabric_inventory/
 scriptname="get_inventory.sh"
 filtered_lldp_filesuffix='.lldp_neighbors'
 ztp_suffix=".ztp.finished"
@@ -34,19 +34,20 @@ echo $httpcont
 if [ $httpcont != "" ]
    then
       ztphost=`echo $httpcont|tr -d '"'`
+      echo "Will use containername $ztphost to get http requests for ZTP finish files"
 fi
 
-echo $ztphost
 httppath=$prot$ztphost$ztp_finishedpath
-echo $httppath
+echo "ZTP finish files url path: $httppath"
+#echo $httppath
 
 # get list of files from http ztp server (http server)
 iplist=`curl -s $prot$ztphost$ztp_finishedpath | grep -o 'href=.*ztp'| sed "s/.ztp.*//" | sed s/.*=\"//`
-echo $iplist
+echo "found list of switches: $iplist"
 
 for ip in $iplist
 do
-  echo $ip
+  #echo $ip
   if [ ! -z "$ip" ] && [ $ip != '*' ]
     then
        # construct authentication credentials json
@@ -55,7 +56,7 @@ do
        resp=`curl -s -k -X POST $sonicprot$ip/authenticate -d "$json"`
        # Substract access_token key value
        token=`echo $resp |jq -r '.access_token'`
-       echo $token
+       #echo $token
 
        if [ ! -z "$token" ] #If there is a token received and thus not zero
          then
@@ -85,11 +86,11 @@ do
 	   #if curl -k --interface eth0 -T ${LOCALCONFIGFILE} tftp://${TFTPSERVER}${UPLOADPATH}${SAVEDCONFIGFILE}
 
 	   tftpupload='tftp://'$tftphost$inventorypath$lldp_neighbors
-	   echo $tftpupload
+	   #echo $tftpupload
 
 	   if curl -k -T $lldp_neighbors $tftpupload
               then
-                echo "Succesfull upload"
+                echo "Succesfull upload LLDP neighborfile for switch $ip"
               else
                 echo "Error uploading file"
            fi
