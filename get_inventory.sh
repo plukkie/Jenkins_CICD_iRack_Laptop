@@ -88,7 +88,7 @@ do
 	   tftpupload='tftp://'$tftphost$inventorypath$lldp_neighbors
 	   #echo $tftpupload
 
-	   if curl -k -T $lldp_neighbors $tftpupload
+	   if curl -s -k -T $lldp_neighbors $tftpupload
               then
                 echo "Succesfull upload LLDP neighborfile for switch $ip"
               else
