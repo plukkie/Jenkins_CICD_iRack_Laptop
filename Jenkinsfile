@@ -84,7 +84,7 @@ pipeline {
 	  
 	stage('Stage: Discover LLDP neighbors') {
 		steps {
-		   sleep( time: 10 )
+		   sleep( time: 60 )
         	   sh './get_inventory.sh'
         	}
 		  
