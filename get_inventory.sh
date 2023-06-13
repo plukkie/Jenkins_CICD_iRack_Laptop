@@ -29,10 +29,16 @@ ztp_suffix=".ztp.finished"
 #done
 
 httpcont=`jq .ztp.dyn_http_contname $settings`
+echo $httpcont
+
 if [ $httpcont != "" ]
    then
       ztphost=$httpcont
 fi
+
+echo $ztphost
+httppath=$prot$ztphost$ztp_finishedpath
+echo $httppath
 
 # get list of files from http ztp server (http server)
 iplist=`curl -s $prot$ztphost$ztp_finishedpath | grep -o 'href=.*ztp'| sed "s/.ztp.*//" | sed s/.*=\"//`
