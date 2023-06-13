@@ -29,7 +29,7 @@ ztp_suffix=".ztp.finished"
 #done
 
 httpcont=`jq .ztp.dyn_http_contname $settings`
-echo $httpcont
+#echo $httpcont
 
 if [ $httpcont != "" ]
    then
