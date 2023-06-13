@@ -33,7 +33,7 @@ echo $httpcont
 
 if [ $httpcont != "" ]
    then
-      ztphost=$httpcont
+      ztphost=`echo $httpcont|tr -d '"'`
 fi
 
 echo $ztphost
