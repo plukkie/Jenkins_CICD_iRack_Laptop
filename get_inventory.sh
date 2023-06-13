@@ -28,7 +28,13 @@ ztp_suffix=".ztp.finished"
 #    fi
 #done
 
-# get list of files from http ztp server
+httpcont=`jq .ztp.dyn_http_contname $settings`
+if [ $httpcont != "" ]
+   then
+      ztphost=$httpcont
+fi
+
+# get list of files from http ztp server (http server)
 iplist=`curl -s $prot$ztphost$ztp_finishedpath | grep -o 'href=.*ztp'| sed "s/.ztp.*//" | sed s/.*=\"//`
 echo $iplist
 
@@ -71,11 +77,6 @@ do
 
 	   #upload to tftp host
 	   #if curl -k --interface eth0 -T ${LOCALCONFIGFILE} tftp://${TFTPSERVER}${UPLOADPATH}${SAVEDCONFIGFILE}
-	   httpcont=`jq .ztp.dyn_http_contname $settings`
-	   if [ $httpcont != "" ]
-	      then
-		  tftphost=$httpcont
-	   fi
 
 	   if curl -k -T $lldp_neighbors tftp://$tftphost$inventorypath$lldp_neighbors
               then
