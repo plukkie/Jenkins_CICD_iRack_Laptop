@@ -69,9 +69,9 @@ pipeline {
 				//echo "${noztpcheck}"
 				println "Feedback from python script: ${env.LS}"
 				if (env.LS == 'proceed = True') {
-					echo 'iRack Provisioned. Proceed to Stage: Ansible Configure iRack.'
+					echo 'iRack Provisioned. Proceed to Stage: discover LLDP neighbors.'
 					echo 'This can take ~15 minutes.....'
-                                        sleep( time: 10 )
+                                        //sleep( time: 10 )
                                 }
 				else {
 					echo 'Job execution to start Dev stage failed.'
@@ -84,6 +84,7 @@ pipeline {
 	  
 	stage('Stage: Discover LLDP neighbors') {
 		steps {
+		   sleep( time: 10 )
         	   sh './get_inventory.sh'
         	}
 		  
