@@ -88,12 +88,24 @@ do
 	   tftpupload='tftp://'$tftphost$inventorypath$lldp_neighbors
 	   #echo $tftpupload
 
+           # Upload files to TFTP server
 	   if curl -s -k -T $lldp_neighbors $tftpupload
               then
-                echo "Succesfull upload LLDP neighborfile for switch $ip"
+                echo "Succesfully uploaded filtered LLDP neighborfile for switch $ip"
               else
-                echo "Error uploading file"
+                echo "Error uploading file $ip"
            fi
+	   
+           tftpupload='tftp://'$tftphost$inventorypath$ip
+
+	   if curl -s -k -T $ip $tftpupload
+              then
+                echo "Succesfully uploaded full collection datafile switch $ip"
+              else
+                echo "Error uploading file $ip"
+           fi
+
+           rm -y $ip && rm -y $lldp_neighbors
 
          else # API access to device failed
            echo -e "\nCan not get API access to $ip\n"
