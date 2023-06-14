@@ -105,7 +105,7 @@ do
                 echo "Error uploading file $ip"
            fi
 
-           rm -y $ip && rm -y $lldp_neighbors
+           rm -f $ip && rm -f $lldp_neighbors
 
          else # API access to device failed
            echo -e "\nCan not get API access to $ip\n"
