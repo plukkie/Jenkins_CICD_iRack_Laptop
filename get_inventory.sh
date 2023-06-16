@@ -80,7 +80,8 @@ do
 
 	   # Create filtered LLDP neighbors file
 	   lldp_neighbors=$ip$filtered_lldp_filesuffix
-	   jq -r '."openconfig-lldp:lldp".interfaces.interface|.[] | select(.neighbors.neighbor != null)|.neighbors.neighbor[]|[ .id, .state ]' $ip > $lldp_neighbors
+	   #jq -r '."openconfig-lldp:lldp".interfaces.interface|.[] | select(.neighbors.neighbor != null)|.neighbors.neighbor[]|[ .id, .state ]' $ip > $lldp_neighbors
+           jq '."openconfig-lldp:lldp".interfaces.interface[] | select(.neighbors.neighbor != null) | .neighbors.neighbor[]|{id, state}' $ip
 
 	   #upload to tftp host
 	   #if curl -k --interface eth0 -T ${LOCALCONFIGFILE} tftp://${TFTPSERVER}${UPLOADPATH}${SAVEDCONFIGFILE}
