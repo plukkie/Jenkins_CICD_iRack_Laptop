@@ -84,7 +84,7 @@ pipeline {
 	stage('Stage: Discover LLDP neighbors') {
 		steps {
 		   sleep( time: 25 )
-        	   sh './get_inventory.py'
+        	   sh 'python3 get_inventory.py'
 		   echo 'Proceed to stage: Configure iRack. This can take ~15 minutes....'
         	}
 		  
