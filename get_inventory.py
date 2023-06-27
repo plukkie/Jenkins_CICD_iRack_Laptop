@@ -31,6 +31,10 @@ def readsettings ( jsonfile ):
         result  = { "tryerror" : "Error reading settings file " + jsonfile }
 
     else:
+        httpcont = data['ztp']['dyn_http_contname']
+        if httpcont == '' or httpcont == None:
+            data['ztp']['dyn_http_contname'] = data['ztp']['serverip']
+		
         result = data
 
     f.close()
@@ -44,7 +48,8 @@ def create_switchip_array ( jsonconfig ):
 
 	ztp=jsonconfig['ztp']
 	suffix=ztp['ztp_finished_suffix']
-	url=ztp['prot']+ztp['serverip']+'/'+ztp['ztp_finished_dir']
+	httpserver = ztp['dyn_http_contname']
+	url=ztp['prot']+httpserver+'/'+ztp['ztp_finished_dir']
 	filelisthtml = get_request ( url, "", "" )
 	#print(filelisthtml.text)
 	doc = pq(filelisthtml.content)
@@ -200,6 +205,7 @@ jsonconfig = readsettings ( settingsfile )
 
 # create list with all ip addresses of ztp finished switches
 iparray = create_switchip_array ( jsonconfig )
+print(iparray)
 
 # Collect data with api requests and save to files
 get_inventory_data ( iparray )
