@@ -996,10 +996,17 @@ if 'creategns3project' in sys.argv[1:]: #Add nodes to project in GNS3
            ## Add API call to delete project from GNS3
            t = list(urltuple)
            t[0] = urltuple[0]+'/'+ projectid
-           urltuple = tuple(t)
-           print(urltuple)
-           response = request ( urltuple, "delete") #Request API POST request
+           newurltuple = tuple(t)
+           print(newurltuple)
+           response = request ( newurltuple, "delete") #Request API POST request
            ## Then create project call
+           response = request ( urltuple, "post") #Request API POST request
+           projectid = json.loads(response)['project_id']
+           print('Project ' + projectid + ' created.')
+
+           time.sleep(1)
+           result = provisiongns3project(json.loads(response))
+           print(result)
            sys.exit()
 
         else:
