@@ -238,6 +238,8 @@ def request ( url, reqtype, jsondata={} ):
         #print(url[1])
         #print(jsondata)
         r = requests.put ( url[0], headers=url[1], json=jsondata )
+    elif reqtype == 'delete':
+        r = requests.delete ( url[0], headers=url[1], json=jsondata )
   
     statuscode = r.status_code
     if statuscode >= 400:
@@ -970,24 +972,41 @@ if urltuple[0] == 'proceed = True': #GNS3 is already running, Report back to pro
     sys.exit()
 
 response = request ( urltuple, "post") #Request API POST request
-
+#print(response)
 if 'creategns3project' in sys.argv[1:]: #Add nodes to project in GNS3
     #print(response)
     if 'already exists' in response: #project was already created
+        projectid = ''
+        auto_del = settings['gns3']['auto_del_project'].lower()
         print(json.loads(response)['message'])
-        print('If you want to rebuild, please delete the project from GNS3.')
-        print('Then restart.')
-       
+
         resp = json.loads(request ( urltuple, "get" )) #Query project to find ID
         #print(resp)
         #print(urltuple)
         for obj in resp:
             if obj['name'] == urltuple[3]['name']:
                 print('Project ID : ' + obj['project_id'])
+                projectid = obj['project_id']
                 #response = json.dumps(obj)
 
-        print('proceed = noztp_check')
-        sys.exit() #Activate when done testing
+        if auto_del == 'yes' or auto_del == True or auto_del == 'true': # project exists, need to be deleted
+           print('Found configswitch : "auto_del = ' + auto_del)
+           print('Will delete project...')
+
+           ## Add API call to delete project from GNS3
+           t = list(urltuple)
+           t[0] = urltuple[0]+'/'+ projectid
+           urltuple = tuple(t)
+           print(urltuple)
+           response = request ( urltuple, "delete") #Request API POST request
+           ## Then create project call
+           sys.exit()
+
+        else:
+           print('If you want to rebuild, please delete the project from GNS3.')
+           print('Then restart.')
+           print('proceed = noztp_check')
+           sys.exit() #Activate when done testing
     else:
         projectid = json.loads(response)['project_id']
         print('Project ' + projectid + ' created.')

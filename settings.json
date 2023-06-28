@@ -42,11 +42,11 @@
 		"prot"		: "http://",
 		"starttimeout"  : 1900,
 		"boottimer"	: 180,
+		"auto_del_project" : "yes",
 		"newprojectdevjson": {
 				    "name" : "iRack_ZTP",
 				    "auto_open" : true,
-				    "auto_close": false,
-				    "auto_del" : "yes"
+				    "auto_close": false
 				  },
 		"nodesdata"	: {
 			"posshift"  : 150,
