@@ -66,7 +66,7 @@
 						"leaflinks" : { "1st_adapter_number" : 4, "adapterstep" : 4, "port" : 0, "portstep" : 0 },
 						"hostlinks" : { "1st_adapter_number" : 1, "adapterstep" : 1, "port" : 0, "portstep" : 0 },
 						"mgtport" : { "adapter_number" : 0, "port_number" : 0 },
-						"mac" : { "base" : "aa:bb:cc:", "start" : 41 }
+						"mac" : { "base" : "cc:bb:aa:", "start" : 41 }
 					}
 				},
 				"border" : {
