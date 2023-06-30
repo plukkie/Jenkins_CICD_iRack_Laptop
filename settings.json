@@ -52,7 +52,7 @@
 			"posshift"  : 150,
 			"templates" : {
 				"leaf"	: { 
-					"name"  : "Enterprise SONiC 4.0.3", 
+					"name"  : "Enterprise SONiC 4.1.0", 
 					"count" : 2,
 					"pos"   : { "x" : -50, "y" : 42 },
 					"mac" 	: { "base" : "cc:bb:aa:", "start" : 11 },
