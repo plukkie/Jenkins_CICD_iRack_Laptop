@@ -90,7 +90,7 @@ pipeline {
 		  
 	}
 
-	stage("Stage Configure: setup iFabric Day1 config") {
+	stage("Stage Configure: setup iFabric Day1 config with AWX") {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage configure | grep "proceed"', returnStdout: true).trim()}"
@@ -134,7 +134,7 @@ pipeline {
 		}
         }
 	  
-	stage("Stage Test: Closed loop Validation Day1") {
+	stage("Stage Test: Closed loop Validation Day1 with AWX") {
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage test | grep "proceed"', returnStdout: true).trim()}"
     		}
