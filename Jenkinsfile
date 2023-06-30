@@ -12,7 +12,7 @@ pipeline {
 		}
 	}
 
-    	stage('Show host versions') {
+    	stage('Version report') {
       		steps {
 			echo 'Show python3 versions:'
         		sh 'python3 --version'
@@ -27,7 +27,7 @@ pipeline {
 			sleep( time: 3 )
       		}
 	}*/
-	stage('Stage: Provision iRack GNS3') {
+	stage('Stage: <br>Build iFabric GNS3') {
 		
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py creategns3project devstage | grep "proceed"', returnStdout: true).trim()}"
@@ -57,7 +57,7 @@ pipeline {
       		}
 	}
 
-    	stage('Stage: iRack SONiC Zero Touch Deployment') {
+    	stage('Stage: \niFabric ZTP with SONiC') {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py startgns3 devstage ${noztpcheck} | grep "proceed"', returnStdout: true).trim()}"
@@ -90,7 +90,7 @@ pipeline {
 		  
 	}
 
-	stage("Stage: Configure iRack Day1") {
+	stage("Stage: Configure iFabric Day1") {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage configure | grep "proceed"', returnStdout: true).trim()}"
@@ -134,7 +134,7 @@ pipeline {
 		}
         }
 	  
-	stage("Stage: Run Closed loop Validation tests") {
+	stage("Stage: Closed loop Validation tests Day1") {
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage test | grep "proceed"', returnStdout: true).trim()}"
     		}
