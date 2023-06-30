@@ -27,7 +27,7 @@ pipeline {
 			sleep( time: 3 )
       		}
 	}*/
-	stage('Stage: Build iFabric GNS3') {
+	stage('Stage Build: Create iFabric in GNS3') {
 		
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py creategns3project devstage | grep "proceed"', returnStdout: true).trim()}"
@@ -57,7 +57,7 @@ pipeline {
       		}
 	}
 
-    	stage('Stage: iFabric ZTP with SONiC') {
+    	stage('Stage Deploy: install SONiC on iFabric') {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py startgns3 devstage ${noztpcheck} | grep "proceed"', returnStdout: true).trim()}"
@@ -81,7 +81,7 @@ pipeline {
       		}
 	}
 	  
-	stage('Stage: Discover LLDP neighbors') {
+	stage('Stage Discover: Collect LLDP neighbors') {
 		steps {
 		   sleep( time: 25 )
         	   sh 'python3 get_inventory.py'
@@ -90,7 +90,7 @@ pipeline {
 		  
 	}
 
-	stage("Stage: Configure iFabric Day1") {
+	stage("Stage Configure: setup iFabric Day1 config") {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage configure | grep "proceed"', returnStdout: true).trim()}"
@@ -134,7 +134,7 @@ pipeline {
 		}
         }
 	  
-	stage("Stage: Closed loop Validation tests Day1") {
+	stage("Stage Test: Closed loop Validation Day1") {
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py launchawx devstage test | grep "proceed"', returnStdout: true).trim()}"
     		}
