@@ -27,7 +27,7 @@ pipeline {
 			sleep( time: 3 )
       		}
 	}*/
-	stage('Stage: <br>Build iFabric GNS3') {
+	stage('Stage: Build iFabric GNS3') {
 		
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py creategns3project devstage | grep "proceed"', returnStdout: true).trim()}"
@@ -57,7 +57,7 @@ pipeline {
       		}
 	}
 
-    	stage('Stage: \niFabric ZTP with SONiC') {
+    	stage('Stage: iFabric ZTP with SONiC') {
 
 		environment {
 			LS = "${sh(script:'python3 -u startcicd.py startgns3 devstage ${noztpcheck} | grep "proceed"', returnStdout: true).trim()}"
